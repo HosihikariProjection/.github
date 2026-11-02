@@ -13,7 +13,7 @@
 
 Hosihikari Projection (星光投影) projects the Minecraft Bedrock native APIs into .NET bindings. It owns the native-to-C-ABI and native-to-managed projection only; plugin lifecycles, the framework, and game logic live elsewhere. A libTooling frontend turns C++ declarations and debug symbols into a versioned intermediate representation; emitters turn that IR into a native-style Interop assembly and a C ABI binding shim, which the shim loader resolves at run time by module offset, vtable slot, or exported symbol.
 
-Three interop surfaces are generated from the same IR pipeline: the Bedrock interop surface from BDS 1.21.3.01 symbols on the default branch and from the BDS 1.26.51.1 header tree on `v1.26.51`, plus the LeviLamina (LLAPI) and Endstone interop surfaces from their public headers. Each repository carries its own coverage contract, and CI verifies that contract against the emitted sources on every push.
+Three interop surfaces are generated from the same IR pipeline: the Bedrock interop surface from BDS 1.21.3.01 symbols on the default branch and from the BDS 1.26.51.1 and 1.26.60.6 header trees on `v1.26.51` and `v1.26.60`, plus the LeviLamina (LLAPI) and Endstone interop surfaces from their public headers. Each repository carries its own coverage contract, and CI verifies that contract against the emitted sources on every push.
 
 **Frontend**: LLVM 23.1.4 libTooling · IR 1.6.0 · Generator 0.3.0  
 **Platforms**: Windows x64 · Linux x64 · `win-x64-server` and `linux-x64-server` configurations  
@@ -30,11 +30,14 @@ Coverage counts come from the committed `coverage/manifest.jsonl` of each intero
 | Endstone | Endstone headers | 1,968 | 1,825 | 143 | 268 | 92.7% | **81.6%** |
 | Bedrock (MCAPI) | 1.21.3.01 debug symbols and BDS headers | 76,578 | 42,289 | 34,289 | 4,051 | 55.2% | **52.4%** |
 | Bedrock (MCAPI, 1.26.51.1) | 1.26.51.1 header IR and LeviLamina headers | 101,068 | 90,270 | 10,798 | 586 | 89.3% | **88.8%** |
+| Bedrock (MCAPI, 1.26.60.6) | 1.26.60.6 header IR and LeviLamina headers | 101,789 | 90,961 | 10,828 | 583 | 89.4% | **88.9%** |
 | LeviLamina (LLAPI) | LeviLamina headers | 6,278 | 4,443 | 1,835 | 237 | 70.8% | **68.2%** |
 
 Bedrock projects 6,433 type declarations (6,221 classes, 211 structs, 1 union) and 704 enums; every one of the 5,952 discovered types that has both a symbol and a header declaration is selected, so symbol coverage for that set is complete — 57,731 of 57,731 symbols. Remaining MCAPI stubs are dominated by members with no symbol or vtable slot (15,602), constructors with no symbol (10,828), and classes with no accessible destructor (2,270).
 
 The 1.26.51.1 surface is emitted from 5,199 LeviLamina headers at tag `v26.51.9` (commit `310bf95e17`; plus `leveldb/status.h` from the pinned leveldb 1.23 package): 12,080 declarations project into 9,146 interop types and 154,702 shim functions. Members resolve at run time through `pl_resolve_symbol`: 43,655 of 72,802 mangled names resolve in the 1.26.51.1 server (60.0%), and 36,497 of the 55,981 name-resolving shim functions resolve (65.2%); a virtual member whose symbol is absent falls back to its vtable slot.
+
+The 1.26.60.6 surface is emitted from 5,169 LeviLamina headers at commit `f28a4b5dd6` (plus `leveldb/status.h`): 12,150 declarations project into 9,222 interop types and 155,450 shim functions. Members resolve at run time through `pl_resolve_symbol`: 6,044 of 72,991 mangled names resolve in the 1.26.60.6 server (8.3%), and 5,494 of the 56,115 name-resolving shim functions resolve (9.8%). The run-time data snapshot pinned by this carrier (`bedrockdata v26.60.6-server.1`) covers a much smaller symbol table than the 1.26.51.1 one: the same 26.51 name list resolves 5,989 names on the 1.26.60.6 server versus 43,655 on 1.26.51.1.
 
 ### MCAPI symbol coverage (1.21.3.01)
 
@@ -55,7 +58,7 @@ LLAPI stubs are concentrated in template handling and ownership: inaccessible or
 
 | Repository | Purpose |
 |---|---|
-| [BedrockBinding](https://github.com/HosihikariProjection/BedrockBinding) | MCAPI Interop and symbol-dispatched binding shim for BDS 1.21.3.01 (`v1.21.3`) and BDS 1.26.51.1 (`v1.26.51`, name-resolved) |
+| [BedrockBinding](https://github.com/HosihikariProjection/BedrockBinding) | MCAPI Interop and symbol-dispatched binding shim for BDS 1.21.3.01 (`v1.21.3`), BDS 1.26.51.1 (`v1.26.51`) and BDS 1.26.60.6 (`v1.26.60`), the latter two name-resolved |
 | [LeviLaminaBinding](https://github.com/HosihikariProjection/LeviLaminaBinding) | LLAPI Interop and binding shim over LeviLamina |
 | [EndstoneBinding](https://github.com/HosihikariProjection/EndstoneBinding) | Endstone C++ API Interop and binding shim |
 | [BindingGenerator](https://github.com/HosihikariProjection/BindingGenerator) | libTooling frontend, IR emitters, symbol discovery, validation tooling |

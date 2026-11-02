@@ -13,7 +13,7 @@
 
 星光投影把 Minecraft 基岩版原生 API 投影成 .NET 绑定。它只负责“原生事实 → C ABI / 托管投影”，不负责插件生命周期、框架本身或游戏逻辑。libTooling 前端把 C++ 声明与调试符号转成带版本的中间表示；发射器再把 IR 转成贴近原生风格的 Interop 程序集与 C ABI binding shim，shim 加载器在运行时按模块偏移、vtable 槽或导出符号解析。
 
-三条互操作面共用同一条 IR 管线：Bedrock 互操作面在默认分支来自 BDS 1.21.3.01 的符号，在 `v1.26.51` 分支来自 BDS 1.26.51.1 的头文件树；LeviLamina（LLAPI）与 Endstone 互操作面来自各自公开的头文件。每个仓库都带自己的覆盖率契约，CI 在每次推送时对照发射产物校验该契约。
+三条互操作面共用同一条 IR 管线：Bedrock 互操作面在默认分支来自 BDS 1.21.3.01 的符号，在 `v1.26.51` 与 `v1.26.60` 分支分别来自 BDS 1.26.51.1 与 1.26.60.6 的头文件树；LeviLamina（LLAPI）与 Endstone 互操作面来自各自公开的头文件。每个仓库都带自己的覆盖率契约，CI 在每次推送时对照发射产物校验该契约。
 
 **前端**：LLVM 23.1.4 libTooling · IR 1.6.0 · 生成器 0.3.0  
 **平台**：Windows x64 · Linux x64 · `win-x64-server` 与 `linux-x64-server` 配置  
@@ -30,11 +30,14 @@
 | Endstone | Endstone 头文件 | 1,968 | 1,825 | 143 | 268 | 92.7% | **81.6%** |
 | Bedrock（MCAPI） | 1.21.3.01 调试符号与 BDS 头文件 | 76,578 | 42,289 | 34,289 | 4,051 | 55.2% | **52.4%** |
 | Bedrock（MCAPI，1.26.51.1） | 1.26.51.1 头文件 IR 与 LeviLamina 头文件 | 101,068 | 90,270 | 10,798 | 586 | 89.3% | **88.8%** |
+| Bedrock（MCAPI，1.26.60.6） | 1.26.60.6 头文件 IR 与 LeviLamina 头文件 | 101,789 | 90,961 | 10,828 | 583 | 89.4% | **88.9%** |
 | LeviLamina（LLAPI） | LeviLamina 头文件 | 6,278 | 4,443 | 1,835 | 237 | 70.8% | **68.2%** |
 
 Bedrock 投影 6,433 个类型声明（6,221 个类、211 个 struct、1 个 union）与 704 个枚举；5,952 个「既有符号又有头文件声明」的类型全部入选，符号覆盖对这批类型是完整的——57,731 / 57,731。其余 MCAPI stub 主要是无符号或无 vtable 槽的成员（15,602）、无符号的构造函数（10,828）与没有可访问析构的类（2,270）。
 
 1.26.51.1 面由 LeviLamina `v26.51.9`（commit `310bf95e17`）的 5,199 个头文件发射（另加固定 leveldb 1.23 包中的 `leveldb/status.h`）：12,080 个声明投影为 9,146 个互操作类型与 154,702 个垫片函数。成员在运行期经 `pl_resolve_symbol` 按名解析：72,802 个修饰名中 43,655 个在 1.26.51.1 服务器中可解析（60.0%）；55,981 个按名垫片函数中 36,497 个可解析（65.2%）；符号缺失的虚成员回退到 vtable 槽调用。
+
+1.26.60.6 面由 LeviLamina `f28a4b5`（commit `f28a4b5dd6`）的 5,169 个头文件发射（另加固定 leveldb 1.23 包中的 `leveldb/status.h`）：12,150 个声明投影为 9,222 个互操作类型与 155,450 个垫片函数。成员在运行期经 `pl_resolve_symbol` 按名解析：72,991 个修饰名中 6,044 个在 1.26.60.6 服务器中可解析（8.3%）；56,115 个按名垫片函数中 5,494 个可解析（9.8%）。该载体锁定的运行期数据快照（`bedrockdata v26.60.6-server.1`）覆盖的符号表远小于 1.26.51.1 的：同一份 26.51 名单在 1.26.60.6 服务器上只有 5,989 个可解析，而在 1.26.51.1 上是 43,655 个。
 
 ### MCAPI 符号覆盖（1.21.3.01）
 
@@ -55,7 +58,7 @@ LLAPI 的 stub 集中在模板与所有权处理：不可访问或不完整的�
 
 | 仓 | 作用 |
 |---|---|
-| [BedrockBinding](https://github.com/HosihikariProjection/BedrockBinding) | BDS 1.21.3.01（`v1.21.3`）与 BDS 1.26.51.1（`v1.26.51`，按名解析）的 MCAPI Interop 与 binding shim |
+| [BedrockBinding](https://github.com/HosihikariProjection/BedrockBinding) | BDS 1.21.3.01（`v1.21.3`）、BDS 1.26.51.1（`v1.26.51`）与 BDS 1.26.60.6（`v1.26.60`）的 MCAPI Interop 与 binding shim，后两者按名解析 |
 | [LeviLaminaBinding](https://github.com/HosihikariProjection/LeviLaminaBinding) | 基于 LeviLamina 的 LLAPI Interop 与 binding shim |
 | [EndstoneBinding](https://github.com/HosihikariProjection/EndstoneBinding) | Endstone C++ API 的 Interop 与 binding shim |
 | [BindingGenerator](https://github.com/HosihikariProjection/BindingGenerator) | libTooling 前端、IR 发射器、符号发现与校验工具 |
