@@ -29,12 +29,12 @@ Coverage counts come from the committed `coverage/manifest.jsonl` of each intero
 |---|---|---:|---:|---:|---:|---:|---:|
 | Endstone | Endstone headers | 1,968 | 1,825 | 143 | 268 | 92.7% | **81.6%** |
 | Bedrock (MCAPI) | 1.21.3.01 debug symbols and BDS headers | 76,578 | 42,289 | 34,289 | 4,051 | 55.2% | **52.4%** |
-| Bedrock (MCAPI, 1.26.51.1) | 1.26.51.1 header IR and LeviLamina headers | 101,068 | 90,048 | 11,020 | 586 | 89.1% | **88.6%** |
+| Bedrock (MCAPI, 1.26.51.1) | 1.26.51.1 header IR and LeviLamina headers | 101,068 | 90,270 | 10,798 | 586 | 89.3% | **88.8%** |
 | LeviLamina (LLAPI) | LeviLamina headers | 6,278 | 4,443 | 1,835 | 237 | 70.8% | **68.2%** |
 
 Bedrock projects 6,433 type declarations (6,221 classes, 211 structs, 1 union) and 704 enums; every one of the 5,952 discovered types that has both a symbol and a header declaration is selected, so symbol coverage for that set is complete — 57,731 of 57,731 symbols. Remaining MCAPI stubs are dominated by members with no symbol or vtable slot (15,602), constructors with no symbol (10,828), and classes with no accessible destructor (2,270).
 
-The 1.26.51.1 surface is emitted from 5,199 LeviLamina headers at commit `ee049f1dc` (plus `leveldb/status.h` from the pinned leveldb 1.23 package): 12,080 declarations project into 9,146 interop types and 154,480 shim functions. Members resolve at run time through `pl_resolve_symbol`: 43,655 of 72,802 mangled names resolve in the 1.26.51.1 server (60.0%), and 36,341 of the 55,762 name-resolving shim functions resolve (65.2%); a virtual member whose symbol is absent falls back to its vtable slot.
+The 1.26.51.1 surface is emitted from 5,199 LeviLamina headers at tag `v26.51.9` (commit `310bf95e17`; plus `leveldb/status.h` from the pinned leveldb 1.23 package): 12,080 declarations project into 9,146 interop types and 154,702 shim functions. Members resolve at run time through `pl_resolve_symbol`: 43,655 of 72,802 mangled names resolve in the 1.26.51.1 server (60.0%), and 36,497 of the 55,981 name-resolving shim functions resolve (65.2%); a virtual member whose symbol is absent falls back to its vtable slot.
 
 ### MCAPI symbol coverage (1.21.3.01)
 
