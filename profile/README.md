@@ -17,7 +17,7 @@ Three interop surfaces are generated from the same IR pipeline: the Bedrock inte
 
 **Frontend**: LLVM 23.1.4 libTooling · IR 1.6.0 · Generator 0.3.0  
 **Platforms**: Windows x64 · Linux x64 · `win-x64-server` and `linux-x64-server` configurations  
-**Carriers**: BDS 1.21.3.01 (direct MCAPI) · LeviLamina 26.51 (LLAPI) · Endstone 0.11
+**Carriers**: BDS 1.21.3.01 (direct MCAPI) · LeviLamina 26.60 (LLAPI) · Endstone 0.11
 
 ## Coverage
 
@@ -30,7 +30,7 @@ Coverage counts come from the committed `coverage/manifest.jsonl` of each intero
 | Endstone | Endstone headers | 1,968 | 1,825 | 143 | 268 | 92.7% | **81.6%** |
 | Bedrock (MCAPI) | 1.21.3.01 debug symbols and BDS headers | 76,578 | 42,289 | 34,289 | 4,051 | 55.2% | **52.4%** |
 | Bedrock (MCAPI, 1.26.60.6) | 1.26.60.6 header IR and LeviLamina headers | 101,794 | 91,230 | 10,564 | 580 | 89.6% | **89.1%** |
-| LeviLamina (LLAPI) | LeviLamina headers | 6,278 | 4,443 | 1,835 | 237 | 70.8% | **68.2%** |
+| LeviLamina (LLAPI) | LeviLamina headers | 7,718 | 5,816 | 1,902 | 259 | 75.4% | **71.4%** |
 
 Bedrock projects 6,433 type declarations (6,221 classes, 211 structs, 1 union) and 704 enums; every one of the 5,952 discovered types that has both a symbol and a header declaration is selected, so symbol coverage for that set is complete — 57,731 of 57,731 symbols. Remaining MCAPI stubs are dominated by members with no symbol or vtable slot (15,602), constructors with no symbol (10,828), and classes with no accessible destructor (2,270).
 
@@ -72,7 +72,7 @@ Maps with named key/value types, callbacks, variants, and custom owning wrappers
 
 ## Provenance
 
-Symbol data is recovered from the proprietary 1.21.3.01 `bedrock_server.pdb`, `bedrock_server.exe`, and `bedrock_server_symbols.debug`; only derived facts and hashes are published. The Bedrock header supplement is the BDS header text that LeviLamina republishes; it only supplies declarations and layouts, and nothing is emitted on its behalf. The LLAPI surface is parsed from LeviLamina 26.51 headers. Each interop surface records the generator version, IR manifest hash, and carrier hashes in `coverage/provenance.json`, and `scripts/verify_generated.py` checks provenance, the coverage baseline, shim counts, and every generated file hash.
+Symbol data is recovered from the proprietary 1.21.3.01 `bedrock_server.pdb`, `bedrock_server.exe`, and `bedrock_server_symbols.debug`; only derived facts and hashes are published. The Bedrock header supplement is the BDS header text that LeviLamina republishes; it only supplies declarations and layouts, and nothing is emitted on its behalf. The LLAPI surface is parsed from LeviLamina 26.60 headers. Each interop surface records the generator version, IR manifest hash, and carrier hashes in `coverage/provenance.json`, and `scripts/verify_generated.py` checks provenance, the coverage baseline, shim counts, and every generated file hash.
 
 ## License and trust boundary
 

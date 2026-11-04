@@ -17,7 +17,7 @@
 
 **前端**：LLVM 23.1.4 libTooling · IR 1.6.0 · 生成器 0.3.0  
 **平台**：Windows x64 · Linux x64 · `win-x64-server` 与 `linux-x64-server` 配置  
-**载体**：BDS 1.21.3.01（直连 MCAPI）· LeviLamina 26.51（LLAPI）· Endstone 0.11
+**载体**：BDS 1.21.3.01（直连 MCAPI）· LeviLamina 26.60（LLAPI）· Endstone 0.11
 
 ## 覆盖
 
@@ -30,7 +30,7 @@
 | Endstone | Endstone 头文件 | 1,968 | 1,825 | 143 | 268 | 92.7% | **81.6%** |
 | Bedrock（MCAPI） | 1.21.3.01 调试符号与 BDS 头文件 | 76,578 | 42,289 | 34,289 | 4,051 | 55.2% | **52.4%** |
 | Bedrock（MCAPI，1.26.60.6） | 1.26.60.6 头文件 IR 与 LeviLamina 头文件 | 101,794 | 91,230 | 10,564 | 580 | 89.6% | **89.1%** |
-| LeviLamina（LLAPI） | LeviLamina 头文件 | 6,278 | 4,443 | 1,835 | 237 | 70.8% | **68.2%** |
+| LeviLamina（LLAPI） | LeviLamina 头文件 | 7,718 | 5,816 | 1,902 | 259 | 75.4% | **71.4%** |
 
 Bedrock 投影 6,433 个类型声明（6,221 个类、211 个 struct、1 个 union）与 704 个枚举；5,952 个「既有符号又有头文件声明」的类型全部入选，符号覆盖对这批类型是完整的——57,731 / 57,731。其余 MCAPI stub 主要是无符号或无 vtable 槽的成员（15,602）、无符号的构造函数（10,828）与没有可访问析构的类（2,270）。
 
@@ -72,7 +72,7 @@ map（需具名 key/value 类型）、回调、variant 与自定义拥有型包�
 
 ## 数据来源
 
-符号数据取自专有的 1.21.3.01 `bedrock_server.pdb`、`bedrock_server.exe` 与 `bedrock_server_symbols.debug`，只发布派生事实与哈希。Bedrock 的头文件补充是 LeviLamina 转载的 BDS 头，只用来提供声明与布局，不为它发射任何东西。LLAPI 互操作面解析的是 LeviLamina 26.51 的头。各互操作面把生成器版本、IR manifest 哈希与载体哈希记录在 `coverage/provenance.json`，`scripts/verify_generated.py` 校验来源、覆盖基线、shim 数量与每个生成文件的哈希。
+符号数据取自专有的 1.21.3.01 `bedrock_server.pdb`、`bedrock_server.exe` 与 `bedrock_server_symbols.debug`，只发布派生事实与哈希。Bedrock 的头文件补充是 LeviLamina 转载的 BDS 头，只用来提供声明与布局，不为它发射任何东西。LLAPI 互操作面解析的是 LeviLamina 26.60 的头。各互操作面把生成器版本、IR manifest 哈希与载体哈希记录在 `coverage/provenance.json`，`scripts/verify_generated.py` 校验来源、覆盖基线、shim 数量与每个生成文件的哈希。
 
 ## 许可与信任边界
 
