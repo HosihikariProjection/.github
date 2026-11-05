@@ -30,7 +30,7 @@ Coverage counts come from the committed `coverage/manifest.jsonl` of each intero
 | Endstone | Endstone headers | 1,968 | 1,813 | 155 | 268 | 92.1% | **81.1%** |
 | Bedrock (MCAPI) | 1.21.3.01 debug symbols and BDS headers | 76,578 | 42,289 | 34,289 | 4,051 | 55.2% | **52.4%** |
 | Bedrock (MCAPI, 1.26.60.6) | 1.26.60.6 header IR and LeviLamina headers | 101,794 | 69,163 | 32,631 | 583 | 67.9% | **67.6%** |
-| LeviLamina (LLAPI) | LeviLamina headers | 7,718 | 6,279 | 1,439 | 259 | 81.4% | **78.7%** |
+| LeviLamina (LLAPI) | LeviLamina headers | 7,718 | 6,287 | 1,431 | 259 | 81.5% | **78.8%** |
 
 LLAPI additionally emits 104 reasoned stubs for free functions whose signatures the emitter cannot map; `ll::memory::hook` and `hookEx` now project, and the runtime smoke installs a detour. Free functions are not member ids and are not counted in the row above.
 
