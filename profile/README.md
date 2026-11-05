@@ -27,10 +27,10 @@ Coverage counts come from the committed `coverage/manifest.jsonl` of each intero
 
 | Interop surface | Source | Members | Callable | Stubbed | Excluded | Rate | Net rate |
 |---|---|---:|---:|---:|---:|---:|---:|
-| Endstone | Endstone headers | 1,968 | 1,825 | 143 | 268 | 92.7% | **81.6%** |
+| Endstone | Endstone headers | 1,968 | 1,813 | 155 | 268 | 92.1% | **81.1%** |
 | Bedrock (MCAPI) | 1.21.3.01 debug symbols and BDS headers | 76,578 | 42,289 | 34,289 | 4,051 | 55.2% | **52.4%** |
 | Bedrock (MCAPI, 1.26.60.6) | 1.26.60.6 header IR and LeviLamina headers | 101,794 | 69,163 | 32,631 | 583 | 67.9% | **67.6%** |
-| LeviLamina (LLAPI) | LeviLamina headers | 7,718 | 5,816 | 1,902 | 259 | 75.4% | **71.4%** |
+| LeviLamina (LLAPI) | LeviLamina headers | 7,718 | 6,213 | 1,505 | 259 | 80.5% | **76.9%** |
 
 Bedrock projects 6,433 type declarations (6,221 classes, 211 structs, 1 union) and 704 enums; every one of the 5,952 discovered types that has both a symbol and a header declaration is selected, so symbol coverage for that set is complete — 57,731 of 57,731 symbols. Remaining MCAPI stubs are dominated by members with no symbol or vtable slot (15,602), constructors with no symbol (10,828), and classes with no accessible destructor (2,270).
 
