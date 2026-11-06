@@ -15,7 +15,7 @@ Hosihikari Projection (星光投影) projects the Minecraft Bedrock native APIs 
 
 Three interop surfaces are generated from the same IR pipeline: the Bedrock interop surface from BDS 1.21.3.01 symbols on the default branch and from the BDS 1.26.60.6 header tree on `v1.26.60`, plus the LeviLamina (LLAPI) and Endstone interop surfaces from their public headers. Each repository carries its own coverage contract, and CI verifies that contract against the emitted sources on every push.
 
-**Frontend**: LLVM 23.1.4 libTooling · IR 1.6.0 · Generator 0.3.0  
+**Frontend**: LLVM 23.1 libTooling · IR 1.6.0 · Generator 0.3.0  
 **Platforms**: Windows x64 · Linux x64 · `win-x64-server` and `linux-x64-server` configurations  
 **Carriers**: BDS 1.21.3.01 (direct MCAPI) · LeviLamina 26.60 (LLAPI) · Endstone 0.11
 
@@ -29,14 +29,14 @@ Coverage counts come from the committed `coverage/manifest.jsonl` of each intero
 |---|---|---:|---:|---:|---:|---:|---:|
 | Endstone | Endstone headers | 1,968 | 1,835 | 133 | 268 | 93.2% | **82.1%** |
 | Bedrock (MCAPI) | 1.21.3.01 debug symbols and BDS headers | 76,578 | 42,289 | 34,289 | 4,051 | 55.2% | **52.4%** |
-| Bedrock (MCAPI, 1.26.60.6) | 1.26.60.6 header IR and LeviLamina headers | 101,794 | 69,163 | 32,631 | 583 | 67.9% | **67.6%** |
+| Bedrock (MCAPI, 1.26.60.6) | 1.26.60.6 header IR and LeviLamina headers | 101,843 | 69,279 | 32,564 | 583 | 68.0% | **67.6%** |
 | LeviLamina (LLAPI) | LeviLamina headers | 7,718 | 6,287 | 1,431 | 259 | 81.5% | **78.8%** |
 
 LLAPI additionally emits 104 reasoned stubs for free functions whose signatures the emitter cannot map; `ll::memory::hook` and `hookEx` now project, and the runtime smoke installs a detour. Free functions are not member ids and are not counted in the row above.
 
 Bedrock projects 6,433 type declarations (6,221 classes, 211 structs, 1 union) and 704 enums; every one of the 5,952 discovered types that has both a symbol and a header declaration is selected, so symbol coverage for that set is complete — 57,731 of 57,731 symbols. Remaining MCAPI stubs are dominated by members with no symbol or vtable slot (15,602), constructors with no symbol (10,828), and classes with no accessible destructor (2,270).
 
-The 1.26.60.6 surface is emitted from 5,169 LeviLamina headers at tag `v26.60.0` (commit `072b9ffe0e`; plus `leveldb/status.h`): 12,138 declarations project into 9,184 interop types and 133,615 shim functions. Members resolve at run time through `pl_resolve_symbol`: 5,697 of the 34,187 mangled names the shim carries resolve in the 1.26.60.6 server (16.7%), and 5,722 of the 34,272 name-resolving shim functions resolve (16.7%). The carrier annotates 27,673 members `MCNAPI` (known but not exported); a prelink against the pinned data resolves 2 of them, against 3,871 of 4,183 `MCAPI` names (92.5%), so those members are emitted as reasoned stubs instead of calls. The run-time data snapshot pinned by this carrier (`bedrockdata v26.60.6-server.5`) covers a much smaller symbol table: prelink maps 6,286 of the 72,997 names the complete header set yields (6,044 at server.1), matching the in-game count exactly, versus 42,782 from the 1.26.51.1 data, so the reduction spans versions. The 26.60.6 client snapshot exposes 6,081 names against 42,953 for 26.51.1, spanning both platforms as well. Of the 104,077 non-stub members, 93,897 (90.2%) additionally have every shim call either local or resolvable; 68.7% of all emitted members. That figure does not model object reachability and is an upper bound.
+The 1.26.60.6 surface is emitted from 5,169 LeviLamina headers at tag `v26.60.2` (commit `ec76722309`; plus `leveldb/status.h`): 12,144 declarations project into 9,190 interop types and 133,727 shim functions. Members resolve at run time through `pl_resolve_symbol`: 5,697 of the 34,187 mangled names the shim carries resolve in the 1.26.60.6 server (16.7%), and 5,722 of the 34,272 name-resolving shim functions resolve (16.7%). The carrier annotates 27,673 members `MCNAPI` (known but not exported); a prelink against the pinned data resolves 2 of them, against 3,871 of 4,183 `MCAPI` names (92.5%), so those members are emitted as reasoned stubs instead of calls. The run-time data snapshot pinned by this carrier (`bedrockdata v26.60.6-server.8`) covers a much smaller symbol table: prelink maps 6,286 of the 72,997 names the complete header set yields (6,044 at server.1), matching the in-game count exactly, versus 42,782 from the 1.26.51.1 data, so the reduction spans versions. The 26.60.6 client snapshot exposes 6,081 names against 42,953 for 26.51.1, spanning both platforms as well. Of the 104,077 non-stub members, 93,897 (90.2%) additionally have every shim call either local or resolvable; 68.7% of all emitted members. That figure does not model object reachability and is an upper bound.
 
 ### MCAPI symbol coverage (1.21.3.01)
 
