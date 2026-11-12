@@ -15,9 +15,9 @@ Hosihikari Projection (星光投影) projects the Minecraft Bedrock native APIs 
 
 Three interop surfaces are generated from the same IR pipeline: the Bedrock interop surface from BDS 1.21.3.01 symbols on the default branch and from the BDS 1.26.60.6 header tree on `v1.26.60`, plus the LeviLamina (LLAPI) and Endstone interop surfaces from their public headers. Each repository carries its own coverage contract, and CI verifies that contract against the emitted sources on every push.
 
-**Frontend**: LLVM 23.1 libTooling · IR 1.6.0 · Generator 0.3.0  
+**Frontend**: LLVM 23.1 libTooling · IR 1.7.0 · Generator 0.3.0  
 **Platforms**: Windows x64 · Linux x64 · `win-x64-server` and `linux-x64-server` configurations  
-**Carriers**: BDS 1.21.3.01 (direct MCAPI) · LeviLamina 26.60 (LLAPI) · Endstone 0.11
+**Carriers**: BDS 1.21.3.01 (direct MCAPI) · LeviLamina 26.60.6 (LLAPI) · Endstone 0.11
 
 ## Coverage
 
@@ -27,16 +27,16 @@ Coverage counts come from the committed `coverage/manifest.jsonl` of each intero
 
 | Interop surface | Source | Members | Callable | Stubbed | Excluded | Rate | Net rate |
 |---|---|---:|---:|---:|---:|---:|---:|
-| Endstone | Endstone headers | 1,968 | 1,835 | 133 | 268 | 93.2% | **82.1%** |
-| Bedrock (MCAPI) | 1.21.3.01 debug symbols and BDS headers | 76,578 | 42,289 | 34,289 | 4,051 | 55.2% | **52.4%** |
-| Bedrock (MCAPI, 1.26.60.6) | 1.26.60.6 header IR and LeviLamina headers | 101,843 | 70,674 | 31,169 | 583 | 69.4% | **69.0%** |
-| LeviLamina (LLAPI) | LeviLamina headers | 7,718 | 6,287 | 1,431 | 259 | 81.5% | **78.8%** |
+| Endstone | Endstone headers | 1,968 | 1,834 | 134 | 268 | 93.2% | **82.0%** |
+| Bedrock (MCAPI) | 1.21.3.01 debug symbols and BDS headers | 127,090 | 99,813 | 27,277 | 8,369 | 78.5% | **73.7%** |
+| Bedrock (MCAPI, 1.26.60.6) | 1.26.60.6 header IR and LeviLamina headers | 101,843 | 71,643 | 30,200 | 583 | 70.3% | **69.9%** |
+| LeviLamina (LLAPI) | LeviLamina headers | 6,296 | 4,767 | 1,529 | 259 | 75.7% | **72.7%** |
 
 LLAPI additionally emits 104 reasoned stubs for free functions whose signatures the emitter cannot map; `ll::memory::hook` and `hookEx` now project, and the runtime smoke installs a detour. Free functions are not member ids and are not counted in the row above.
 
-Bedrock projects 6,433 type declarations (6,221 classes, 211 structs, 1 union) and 704 enums; every one of the 5,952 discovered types that has both a symbol and a header declaration is selected, so symbol coverage for that set is complete — 57,731 of 57,731 symbols. Remaining MCAPI stubs are dominated by members with no symbol or vtable slot (15,602), constructors with no symbol (10,828), and classes with no accessible destructor (2,270).
+Bedrock projects 6,433 type declarations (6,221 classes, 211 structs, 1 union) and 704 enums; every one of the 5,952 discovered types that has both a symbol and a header declaration is selected, so symbol coverage for that set is complete — 57,731 of 57,731 symbols. Remaining MCAPI stubs are dominated by constructors with no symbol (9,620), members with no symbol or vtable slot (9,615), and classes with no accessible destructor (2,133).
 
-The 1.26.60.6 surface is emitted from 5,169 LeviLamina headers at tag `v26.60.2` (commit `ec76722309`; plus `leveldb/status.h`): 12,144 declarations project into 9,190 interop types and 136,358 shim functions. Members resolve at run time through `pl_resolve_symbol`: 5,697 of the 34,187 mangled names the shim carries resolve in the 1.26.60.6 server (16.7%), and 5,722 of the 34,272 name-resolving shim functions resolve (16.7%). The carrier annotates 27,673 members `MCNAPI` (known but not exported); a prelink against the pinned data resolves 2 of them, against 3,871 of 4,183 `MCAPI` names (92.5%), so those members are emitted as reasoned stubs instead of calls. The run-time data snapshot pinned by this carrier (`bedrockdata v26.60.6-server.8`) covers a much smaller symbol table: prelink maps 6,286 of the 72,997 names the complete header set yields (6,044 at server.1), matching the in-game count exactly, versus 42,782 from the 1.26.51.1 data, so the reduction spans versions. The 26.60.6 client snapshot exposes 6,081 names against 42,953 for 26.51.1, spanning both platforms as well. Of the 104,077 non-stub members, 93,897 (90.2%) additionally have every shim call either local or resolvable; 68.7% of all emitted members. That figure does not model object reachability and is an upper bound.
+The 1.26.60.6 surface is emitted from 5,169 LeviLamina headers at tag `v26.60.6` (commit `11bb4f4`; plus `leveldb/status.h`): 12,159 declarations project into 9,205 interop sources and 137,976 shim functions. Members resolve at run time through `pl_resolve_symbol`. The carrier annotates some members `MCNAPI` (known but not exported); a prelink against the pinned data resolves almost none of them while most `MCAPI` names resolve, so those members are emitted as reasoned stubs instead of calls. The run-time data snapshot pinned by this carrier (`bedrockdata v26.60.6-server.8`) covers a much smaller symbol table than the 1.26.51.1 data on both platforms. The run-time resolution percentages and the runtime-usable share previously published here were measured on the v26.60.2 surface; they are being re-measured for the current emission.
 
 ### MCAPI symbol coverage (1.21.3.01)
 
@@ -51,7 +51,7 @@ Discovery records 23,409 RTTI spellings, but most are standard-library instantia
 
 `BindingGenerator/artifacts/symbol-classes-1.21.3.tsv` is the discovery list; `scripts/classes-1.21.3.txt` in the Bedrock repository is the selected subset. Coverage moves only when a class is added.
 
-LLAPI stubs are concentrated in template handling and ownership: inaccessible or incomplete template arguments (584), template constructors without a visible definition (442), assignment operators on specializations (424), and classes with no accessible destructor (189).
+LLAPI stubs are concentrated in template handling and ownership: template assignment operators with no visible definition (473), template copy and move constructors (467), classes with no accessible destructor (213), and inaccessible or incomplete template arguments (84).
 
 ## Interop surfaces
 
@@ -74,7 +74,7 @@ Maps with named key/value types, callbacks, variants, and custom owning wrappers
 
 ## Provenance
 
-Symbol data is recovered from the proprietary 1.21.3.01 `bedrock_server.pdb`, `bedrock_server.exe`, and `bedrock_server_symbols.debug`; only derived facts and hashes are published. The Bedrock header supplement is the BDS header text that LeviLamina republishes; it only supplies declarations and layouts, and nothing is emitted on its behalf. The LLAPI surface is parsed from LeviLamina 26.60 headers. Each interop surface records the generator version, IR manifest hash, and carrier hashes in `coverage/provenance.json`, and `scripts/verify_generated.py` checks provenance, the coverage baseline, shim counts, and every generated file hash.
+Symbol data is recovered from the proprietary 1.21.3.01 `bedrock_server.pdb`, `bedrock_server.exe`, and `bedrock_server_symbols.debug`; only derived facts and hashes are published. The Bedrock header supplement is the BDS header text that LeviLamina republishes; it only supplies declarations and layouts, and nothing is emitted on its behalf. The LLAPI surface is parsed from LeviLamina 26.60.6 headers. Each interop surface records the generator version, IR manifest hash, and carrier hashes in `coverage/provenance.json`, and `scripts/verify_generated.py` checks provenance, the coverage baseline, shim counts, and every generated file hash.
 
 ## License and trust boundary
 
